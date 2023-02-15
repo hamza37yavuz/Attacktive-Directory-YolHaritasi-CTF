@@ -21,14 +21,16 @@ THM'nin makinesini başlatalım.
 Temel port taraması ve numaralandırma için nmap kullanarak başlayacağız. Sonrasında farklı numaralandırma işlemleri için farklı programları kullanacağız. Tüm bu işlemleri yapmadan önce elde ettiğimiz bilgileri kaydetmek için not.txt dosyasını açalım. Şimdi nmap taramasını yapalım:
 `nmap -v -sS -A -O -T4 <Hedef IP>`
 
-![alt text](https://raw.githubusercontent.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/main/nmap.png?token=GHSAT0AAAAAAB6HHNKNNDHDUIQHKZS52L7SY7M7ORQ)
+![alt text](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/nmap.png)
 
 THM'deki soruların cevaplarını not.txt dosyasını inceleyerek bulabilirsiniz.
 
 139 ve 445 numaralı bağlantı noktaları SMB tarafından kullanılır. SMB'yi numaralandırmak için enum4linux'u kullanacağız.
 
 `enum4linux <hedef ip> -a spookysec.local`
-![alt text](https://raw.githubusercontent.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/main/enum4linux.png?token=GHSAT0AAAAAAB6HHNKNJG3U2IT4VE7ON6WEY7M7OPA)
+![alt text](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/enum4linux.png)
+
+Yukarıdaki resimde kullanıcı grupları listelenmiştir yine bu kullanıcı grupları not.txt'dosyasına kaydedilmiştir.
 
 ### *Adım4:*
 
@@ -36,7 +38,13 @@ Kerberos da dahil olmak üzere bir dizi başka hizmet çalışıyor . Kerberos, 
 
 Bu sistem için hazırlanmış kullanıcı listesi ve parola listesi, kullanıcıların numaralandırılması ve parola kırma süresini kısaltmak için kullanılacaktır. Bu listeleri `wget` kullanarak bilgisayarımıza indirebiliriz.
 
->![THM'nin önerdiği kullanıcı listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt)
+>![THM'nin kullanıcı listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt)
 
->![THM'nin önerdiği şifre listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/passwordlist.txt)
+>![THM'nin şifre listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/passwordlist.txt)
+
+Kerbrute kullanarak kullanıcı adlarını almak için `userenum` komutunu kullanacağız. Kullanımın nasıl olduğu farklı şekillerde nasıl kullanılabileceğini anlamak için doğru dosya dizinine giderek `./kerbrute -h` komutunu çalıştırabilirsiniz. Kullanıcıları görmek için aşağıdaki komutu terminalimizde çalıştıracağız.
+
+`./kerbrute userenum userlist.txt --dc <hedef ip> -d spookysec.local`
+
+
 
