@@ -21,11 +21,14 @@ THM'nin makinesini başlatalım.
 Temel port taraması ve numaralandırma için nmap kullanarak başlayacağız. Sonrasında farklı numaralandırma işlemleri için farklı programları kullanacağız. Tüm bu işlemleri yapmadan önce elde ettiğimiz bilgileri kaydetmek için not.txt dosyasını açalım. Şimdi nmap taramasını yapalım:
 `nmap -v -sS -A -O -T4 <Hedef IP>`
 
+![alt text](https://raw.githubusercontent.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/main/nmap.png?token=GHSAT0AAAAAAB6HHNKNNDHDUIQHKZS52L7SY7M7ORQ)
+
 THM'deki soruların cevaplarını not.txt dosyasını inceleyerek bulabilirsiniz.
 
 139 ve 445 numaralı bağlantı noktaları SMB tarafından kullanılır. SMB'yi numaralandırmak için enum4linux'u kullanacağız.
 
 `enum4linux <hedef ip> -a spookysec.local`
+![alt text](https://raw.githubusercontent.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/main/enum4linux.png?token=GHSAT0AAAAAAB6HHNKNJG3U2IT4VE7ON6WEY7M7OPA)
 
 ### *Adım4:*
 
