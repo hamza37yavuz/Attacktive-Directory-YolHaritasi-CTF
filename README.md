@@ -65,3 +65,11 @@ hashcat komutunu çalıştırmak için elde ettiğimiz hash'i bir txt'ye yapış
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/hashcat.jpeg)
 
 Bunun sonucunda svc-admin'in parolası management2005 olarak bulmuş oluyoruz.
+
+### *Adım 6:*
+Bir kullanıcının hesap kimlik bilgileriyle artık etki alanı içinde önemli ölçüde daha fazla erişime sahibiz. Artık paylaşımları numaralandırma konusunda daha derinlere inebiliriz.
+Uzak SMB paylaşımlarını eşlemek için hangi smbclient programını kullanabiliriz. Bu program yardımıylauzak paylaşımları bulacağız ve listeleyeceğiz. Aşağıdaki komutu çalıştırarak listeyi görüntüleyelim.
+
+`smbclient -L <hedef ip> -U svc-admin`
+
+
