@@ -117,4 +117,4 @@ Bunu da not.txt dosyamız not alıyoruz ve admin panelinden diğer kullanıcıla
  
  Bu şekilde tüm bayrakları bulduk ve görevi bitirdik.
  
- Okuduğunuz için teşekkürler :)
+ Okuduğunuz için teşekkürler :) 
