@@ -21,7 +21,7 @@ Temel port taraması ve numaralandırma işlemi için nmap kullanarak başlayaca
 
 `nmap -v -sS -A -O -T4 <Hedef IP>`
 
-![alt text](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/nmap.png)
+![](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/nmap.png)
 
 THM'deki soruların cevaplarını not.txt dosyasını inceleyerek bulabilirsiniz.
 
@@ -29,11 +29,11 @@ THM'deki soruların cevaplarını not.txt dosyasını inceleyerek bulabilirsiniz
 
 `enum4linux <hedef ip> -a spookysec.local`
 
-![alt text](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/enum4linux.png)
+![](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/enum4linux.png)
 
 Yukarıdaki resimde kullanıcı grupları listelenmiştir yine bu kullanıcı grupları not.txt'dosyasına kaydedilmiştir.
 
-### *Adım4:*
+### *Adım 5:*
 
 Kerberos da dahil olmak üzere bir dizi başka hizmet çalışıyor . Kerberos, Active Directory içindeki bir anahtar kimlik doğrulama hizmetidir. Bu bağlantı noktası açıkken, kullanıcıların parolalarını ve hatta parola spreyini kaba kuvvetle keşfi mümkündür. Bunun için Kerbrute (Ronnie Flathers @ropnop tarafından oluşturulan) adlı bir araç kullanabiliriz !
 
@@ -48,4 +48,14 @@ Kerbrute kullanarak kullanıcı adlarını almak için `userenum` komutunu kulla
 `./kerbrute userenum userlist.txt --dc <hedef ip> -d spookysec.local`
 
 ![alt text](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/kerbrute.png)
+### *Adım 5:*
+Kullanıcı hesaplarının numaralandırılması tamamlandıktan sonra, ASREPRoasting adlı bir saldırı yöntemi ile Kerberos içindeki bir özelliği kötüye kullanmaya çalışabiliriz. ASReproasting saldırısı bir kullanıcı hesabı "Ön Kimlik Doğrulaması Gerektirmez" ayrıcalığına sahip olduğunda gerçekleşir. Bu, hesabın belirtilen kullanıcı hesabından bir kerberos bileti talep etmeden önce geçerli bir kimlik sağlaması gerekmediği anlamına gelir.
+Impacket , ASReproastable hesaplarını Anahtar Dağıtım Merkezinden sorgulamamıza izin verecek “GetNPUsers.py” adlı bir araca sahiptir (impacket/examples/GetNPUsers.py konumunda bulunur). Hesapları sorgulamak için gerekli olan tek şey, daha önce Kerbrute aracılığıyla sıraladığımız hesaplar arasından bir hesap seçmek ve bilet almak için deneme yapmaktır. 4. Adımda elde ettiğimiz listedeki kullanıcı adlarını burada kullanacağız.
+Bunun için ilk olarak `/opt/impacket/examples` dizinine gitmeliyiz. Bu işlemi yaptıktan sonra getNPUsers.py dosyasını aşağıdaki gibi çalıştırarak şifre hash'ini (bileti) almaya çalışacağız.
 
+`python GetNPUsers.py -dc-ip <hedef ip> spookysec.local/<kullanıcı adı> -no-pass` --> kullanıcı adı yerine svc-admin yazılabilir
+
+hash'i elde ettik ve not.txt dosyasına kaydettik. Bu hash svc-admin kullanıcısının şifresinin hash'idir. Bu hash'i çözmek için hashcat programını kullanacağız. Hashcat programını çalıştırmak için mod değerine ihtiyacımız var bu mod değerini elde etmek için [bu siteye bakabilirsiniz.](https://hashcat.net/wiki/doku.php?id=example_hashes)
+hashcat komutunu çalıştırmak için elde ettiğimiz hash'i bir txt'ye yapıştırmalıyız ve aşağıdaki şekilde yazarak şifreyi elde edebiliriz.
+
+`hashcat -m 18200 hashCode.txt passwordlist.txt`
