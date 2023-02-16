@@ -55,7 +55,13 @@ Bunun için ilk olarak `/opt/impacket/examples` dizinine gitmeliyiz. Bu işlemi 
 
 `python GetNPUsers.py -dc-ip <hedef ip> spookysec.local/<kullanıcı adı> -no-pass` --> kullanıcı adı yerine svc-admin yazılabilir
 
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/GetNPUsers.png)
+
 hash'i elde ettik ve not.txt dosyasına kaydettik. Bu hash svc-admin kullanıcısının şifresinin hash'idir. Bu hash'i çözmek için hashcat programını kullanacağız. Hashcat programını çalıştırmak için mod değerine ihtiyacımız var bu mod değerini elde etmek için [bu siteye bakabilirsiniz.](https://hashcat.net/wiki/doku.php?id=example_hashes)
-hashcat komutunu çalıştırmak için elde ettiğimiz hash'i bir txt'ye yapıştırmalıyız ve aşağıdaki şekilde yazarak şifreyi elde edebiliriz.
+hashcat komutunu çalıştırmak için elde ettiğimiz hash'i bir txt'ye yapıştırmıştık. Aşağıdaki şekilde yazarak şifreyi elde edebiliriz.
 
 `hashcat -m 18200 hashCode.txt passwordlist.txt`
+
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/hashcat.jpeg)
+
+Bunun sonucunda svc-admin'in parolası management2005 olarak bulmuş oluyoruz.
