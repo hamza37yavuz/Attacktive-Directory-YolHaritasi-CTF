@@ -72,4 +72,49 @@ Uzak SMB paylaşımlarını eşlemek için hangi smbclient programını kullanab
 
 `smbclient -L <hedef ip> -U svc-admin`
 
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/smbclient.png)
 
+backup paylaşımına svc-admin olarak erişmek için aşağıdaki komutu çalıştırabiliriz:
+
+`smbclient \\\\<hedef ip>\\backup -U svc-admin`
+
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/backup.png)
+
+burada bulduğumuz şifrelenmiş bir parola olabileceğini düşünüyoruz. Şifrelenme tekniğine dikkatli bakıldığında base64'e benzediği görülebilir. bu şifrelenmiş parolayı çözmek için [bu linkten yararlanıyoruz.](https://www.base64decode.org/) Bulduğumuz parolayı ve şifrelenmiş halini not.txt dosyamıza kaydediyoruz.
+### *Adım 7:*
+Artık yeni kullanıcı hesabı kimlik bilgilerimiz olduğuna göre, sistemde eskisinden daha fazla ayrıcalığa sahip olabiliriz. Hesabın kullanıcı adı “backup” yani yedekleme bizi düşündürüyor.
+
+Bu hesap Domain Denetleyicisi için bir yedek hesaptır. Bu hesabın tüm Active Directory değişikliklerinin bu kullanıcı hesabıyla eşitlenmesine izin veren benzersiz bir izni vardır. Buna parola hash'leri de dahildir.
+
+Bunu bilerek, Impacket içinde “secretsdump.py” adlı başka bir araç kullanabiliriz. Bu, bu kullanıcı hesabının (backup) sunduğu tüm parola hash'lerini almamıza izin verecektir. Bunu kullanarak, Active Directory Domain Alanı üzerinde etkin bir şekilde tam kontrole sahip olacağız.
+
+Bu dosya benim bilgisayarımda `/usr/share/doc/python3-impacket/examples` dizininde bulunuyor. Şu komutla diğer parola hash'lerine ulaşabiliriz.
+
+`python secretsdump.py -just-dc backup@10.10.36.93`
+
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/secretsdump.png)
+
+Sonuçları not.txt dosyama kaydediyoruz ve bu hash'lerden admine ait olanı kullanarak admin kullanıcı hesabına nasıl gireceğimizi düşünüyoruz.
+
+Admin kullanıcısının NTLM hash'i 0e0363213e37b94221497260b0bcb4fc olarak buluyoruz. Her iki nokta arası başka bir hash'i ifade ettiğini [bu linkten bakarak öğrenebilirsiniz.](https://security.stackexchange.com/questions/161889/understanding-windows-local-password-hashes-ntlm)
+### *Adım 8:*
+Hash yardımıyla admin girişi yapabilmek için evil-winrm programını kullanacağız. Bu programı aşağıdaki komutla indirebiliriz:
+
+`apt install evil-winrm`
+
+İndirdikten sonra şu komutu çalıştırarak admin paneline bağlanabiliriz.
+
+`evil-winrm -i 10.10.36.93 -u Administrator -H 0e0363213e37b94221497260b0bcb4fc`
+
+![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/admin.png)
+
+Burada ilk ve en önemli bayrağımızı bulmuş olduk (Admin)-> `TryHackMe{4ctiveD1rectoryM4st3r}`
+Bunu da not.txt dosyamız not alıyoruz ve admin panelinden diğer kullanıcılara erişerek onların içerisindeki bayrakları bulmaya devam ediyoruz.
+
+ `(svc-admin)->TryHackMe{K3rb3r0s_Pr3_4uth}`
+ 
+ `(backup)->TryHackMe{B4ckM3UpSc0tty!}`
+ 
+ Bu şekilde tüm bayrakları bulduk ve görevi bitirdik.
+ 
+ Okuduğunuz için teşekkürler :)
