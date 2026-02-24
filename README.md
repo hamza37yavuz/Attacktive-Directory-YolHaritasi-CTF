@@ -1,13 +1,14 @@
-## **TryHackMe : ATTACKTIVE DIRECTORY YOL HARITASI** 
+## **TryHackMe: ATTACKTIVE DIRECTORY WALKTHROUGH** 
 ![](https://tryhackme.com/room/attacktivedirectory)
-THM'den (TryHackMe'den) oğrendiğim bilgileri unutmamak için bir yol haritası oluşturuyorum. Bu yol haritasını izlemeden önce kerbrute programını bilgisayarınıza indiriniz. [Buradan wget kullanarak bilgisayarınıza indirebilirsiniz](https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64) Vakit kaybetmeden başlayalım:
+I'm putting together this walkthrough to solidify what I've learned from THM (TryHackMe). Before you begin, make sure to download kerbrute onto your machine. [You can grab it via wget from here](https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64). Let's jump right in:
 
-### *Adım 1:*
-İlk olarak kali'mizi acalım ve THM'den daha once indirmis oldugumuz vpn'i asagidaki komutla çalistiralim:
-`openvpn <vpnismi>.ovpn`
-THM'nin makinesini başlatalım.
-### *Adım2:*
-İmpacket kurulumu için aşağıdaki komutları sırasıyla terminalde çalıştıralım:
+### *Step 1:*
+Fire up your Kali machine and start the VPN you previously downloaded from THM:
+`openvpn <vpnname>.ovpn`
+Then go ahead and deploy the THM machine.
+
+### *Step 2:*
+To install Impacket, run the following commands in your terminal one by one:
 
 `git clone https://github.com/SecureAuthCorp/impacket.git`
 
@@ -16,105 +17,114 @@ THM'nin makinesini başlatalım.
 `pip3 install -r /opt/impacket/requirements.txt`
 
 `cd /opt/impacket/ && python3 ./setup.py install`
-### *Adım3:*
-Temel port taraması ve numaralandırma işlemi için nmap kullanarak başlayacağız. Sonrasında farklı numaralandırma işlemleri için farklı programları kullanacağız. Tüm bu işlemleri yapmadan önce elde ettiğimiz bilgileri kaydetmek için not.txt dosyasını açalım ve nmap taramasını yapalım:
 
-`nmap -v -sS -A -O -T4 <Hedef IP>`
+### *Step 3:*
+We'll kick things off with a basic port scan and enumeration using nmap. Later on, we'll use different tools for more specific enumeration tasks. Before doing any of this, let's create a notes.txt file to keep track of our findings, and run our nmap scan:
+
+`nmap -v -sS -A -O -T4 <Target IP>`
 
 ![](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/nmap.png)
 
-THM'deki soruların cevaplarını not.txt dosyasını inceleyerek bulabilirsiniz.
+You can find the answers to the THM questions by reviewing the notes.txt file.
 
-139 ve 445 numaralı bağlantı noktaları SMB tarafından kullanılır. SMB'yi numaralandırmak için enum4linux'u kullanacağız.
+Ports 139 and 445 are used by SMB. To enumerate SMB, we'll use enum4linux.
 
-`enum4linux <hedef ip> -a spookysec.local`
+`enum4linux <target ip> -a spookysec.local`
 
 ![](https://github.com/hamza37yavuz/AttacktiveD-rectory-YolHaritas-/blob/main/enum4linux.png)
 
-Yukarıdaki resimde kullanıcı grupları listelenmiştir yine bu kullanıcı grupları not.txt'dosyasına kaydedilmiştir.
+The image above shows the user groups that were discovered — these have also been saved to notes.txt.
 
-### *Adım 5:*
+### *Step 4:*
 
-Kerberos da dahil olmak üzere bir dizi başka hizmet çalışıyor . Kerberos, Active Directory içindeki bir anahtar kimlik doğrulama hizmetidir. Bu bağlantı noktası açıkken, kullanıcıların parolalarını ve hatta parola spreyini kaba kuvvetle keşfi mümkündür. Bunun için Kerbrute (Ronnie Flathers @ropnop tarafından oluşturulan) adlı bir araç kullanabiliriz !
+There are several other services running as well, including Kerberos. Kerberos is a key authentication service within Active Directory. With this port open, it becomes possible to brute-force user passwords and even perform password spraying. For this, we can use a tool called Kerbrute (created by Ronnie Flathers, @ropnop).
 
-Bu sistem için hazırlanmış kullanıcı listesi ve parola listesi, kullanıcıların numaralandırılması ve parola kırma süresini kısaltmak için kullanılacaktır. Bu listeleri `wget` kullanarak bilgisayarımıza indirebiliriz.
+A pre-built user list and password list for this system will be used to speed up user enumeration and password cracking. We can download these lists using `wget`.
 
->[THM'nin kullanıcı listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt)
+>[THM user list](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt)
 
->[THM'nin şifre listesi](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/passwordlist.txt)
+>[THM password list](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/passwordlist.txt)
 
-Kerbrute kullanarak kullanıcı adlarını almak için `userenum` komutunu kullanacağız. Kullanımın nasıl olduğu farklı şekillerde nasıl kullanılabileceğini anlamak için doğru dosya dizinine giderek `./kerbrute -h` komutunu çalıştırabilirsiniz. Kullanıcıları görmek için aşağıdaki komutu terminalimizde çalıştıracağız.
+We'll use the `userenum` command with Kerbrute to pull valid usernames. To see how it works and explore usage options, navigate to the correct directory and run `./kerbrute -h`. To enumerate users, run the following command:
 
-`./kerbrute userenum userlist.txt --dc <hedef ip> -d spookysec.local`
+`./kerbrute userenum userlist.txt --dc <target ip> -d spookysec.local`
 
 ![alt text](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/kerbrute.png)
-### *Adım 5:*
-Kullanıcı hesaplarının numaralandırılması tamamlandıktan sonra, ASREPRoasting adlı bir saldırı yöntemi ile Kerberos içindeki bir özelliği kötüye kullanmaya çalışabiliriz. ASReproasting saldırısı bir kullanıcı hesabı "Ön Kimlik Doğrulaması Gerektirmez" ayrıcalığına sahip olduğunda gerçekleşir. Bu, hesabın belirtilen kullanıcı hesabından bir kerberos bileti talep etmeden önce geçerli bir kimlik sağlaması gerekmediği anlamına gelir.
-Impacket , ASReproastable hesaplarını Anahtar Dağıtım Merkezinden sorgulamamıza izin verecek “GetNPUsers.py” adlı bir araca sahiptir (impacket/examples/GetNPUsers.py konumunda bulunur). Hesapları sorgulamak için gerekli olan tek şey, daha önce Kerbrute aracılığıyla sıraladığımız hesaplar arasından bir hesap seçmek ve bilet almak için deneme yapmaktır. 4. Adımda elde ettiğimiz listedeki kullanıcı adlarını burada kullanacağız.
-Bunun için ilk olarak `/opt/impacket/examples` dizinine gitmeliyiz. Bu işlemi yaptıktan sonra getNPUsers.py dosyasını aşağıdaki gibi çalıştırarak şifre hash'ini (bileti) almaya çalışacağız.
 
-`python GetNPUsers.py -dc-ip <hedef ip> spookysec.local/<kullanıcı adı> -no-pass` --> kullanıcı adı yerine svc-admin yazılabilir
+### *Step 5:*
+Now that user enumeration is complete, we can try to abuse a Kerberos feature through an attack method called ASREPRoasting. This attack works when a user account has the "Does Not Require Pre-Authentication" privilege set. This means the account doesn't need to provide valid identification before requesting a Kerberos ticket for the specified user.
+
+Impacket includes a tool called "GetNPUsers.py" that allows us to query ASReproastable accounts from the Key Distribution Center (located at impacket/examples/GetNPUsers.py). All we need is to pick an account from the list we enumerated via Kerbrute and try to retrieve a ticket. We'll use the usernames obtained in Step 4.
+
+First, navigate to the `/opt/impacket/examples` directory. Then run GetNPUsers.py as follows to attempt to retrieve the password hash (ticket):
+
+`python GetNPUsers.py -dc-ip <target ip> spookysec.local/<username> -no-pass` --> you can use svc-admin as the username
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/GetNPUsers.png)
 
-hash'i elde ettik ve not.txt dosyasına kaydettik. Bu hash svc-admin kullanıcısının şifresinin hash'idir. Bu hash'i çözmek için hashcat programını kullanacağız. Hashcat programını çalıştırmak için mod değerine ihtiyacımız var bu mod değerini elde etmek için [bu siteye bakabilirsiniz.](https://hashcat.net/wiki/doku.php?id=example_hashes)
-hashcat komutunu çalıştırmak için elde ettiğimiz hash'i bir txt'ye yapıştırmıştık. Aşağıdaki şekilde yazarak şifreyi elde edebiliriz.
+We've obtained the hash and saved it to notes.txt. This is the password hash for the svc-admin user. To crack it, we'll use hashcat. We need the correct mode value to run hashcat — you can look it up on [this page](https://hashcat.net/wiki/doku.php?id=example_hashes).
+
+We already pasted the hash into a text file earlier. Now we can crack it with the following command:
 
 `hashcat -m 18200 hashCode.txt passwordlist.txt`
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/hashcat.jpeg)
 
-Bunun sonucunda svc-admin'in parolası management2005 olarak bulmuş oluyoruz.
+And just like that, we find that svc-admin's password is management2005.
 
-### *Adım 6:*
-Bir kullanıcının hesap kimlik bilgileriyle artık etki alanı içinde önemli ölçüde daha fazla erişime sahibiz. Artık paylaşımları numaralandırma konusunda daha derinlere inebiliriz.
-Uzak SMB paylaşımlarını eşlemek için hangi smbclient programını kullanabiliriz. Bu program yardımıylauzak paylaşımları bulacağız ve listeleyeceğiz. Aşağıdaki komutu çalıştırarak listeyi görüntüleyelim.
+### *Step 6:*
+With valid user credentials in hand, we now have significantly more access within the domain. It's time to dig deeper into share enumeration.
 
-`smbclient -L <hedef ip> -U svc-admin`
+We can use smbclient to map remote SMB shares. This tool will help us discover and list remote shares. Let's run the following command to view the list:
+
+`smbclient -L <target ip> -U svc-admin`
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/smbclient.png)
 
-backup paylaşımına svc-admin olarak erişmek için aşağıdaki komutu çalıştırabiliriz:
+To access the backup share as svc-admin, run:
 
-`smbclient \\\\<hedef ip>\\backup -U svc-admin`
+`smbclient \\\\<target ip>\\backup -U svc-admin`
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/backup.png)
 
-burada bulduğumuz şifrelenmiş bir parola olabileceğini düşünüyoruz. Şifrelenme tekniğine dikkatli bakıldığında base64'e benzediği görülebilir. bu şifrelenmiş parolayı çözmek için [bu linkten yararlanıyoruz.](https://www.base64decode.org/) Bulduğumuz parolayı ve şifrelenmiş halini not.txt dosyamıza kaydediyoruz.
-### *Adım 7:*
-Artık yeni kullanıcı hesabı kimlik bilgilerimiz olduğuna göre, sistemde eskisinden daha fazla ayrıcalığa sahip olabiliriz. Hesabın kullanıcı adı “backup” yani yedekleme bizi düşündürüyor.
+What we find here looks like it could be an encoded password. Taking a closer look at the encoding, it resembles base64. We can decode it using [this tool](https://www.base64decode.org/). The decoded password and its encoded form are saved to notes.txt.
 
-Bu hesap Domain Denetleyicisi için bir yedek hesaptır. Bu hesabın tüm Active Directory değişikliklerinin bu kullanıcı hesabıyla eşitlenmesine izin veren benzersiz bir izni vardır. Buna parola hash'leri de dahildir.
+### *Step 7:*
+Now that we have new account credentials, we may have even higher privileges on the system. The username "backup" is a strong hint about this account's purpose.
 
-Bunu bilerek, Impacket içinde “secretsdump.py” adlı başka bir araç kullanabiliriz. Bu, bu kullanıcı hesabının (backup) sunduğu tüm parola hash'lerini almamıza izin verecektir. Bunu kullanarak, Active Directory Domain Alanı üzerinde etkin bir şekilde tam kontrole sahip olacağız.
+This is a backup account for the Domain Controller. It has a unique permission that allows all Active Directory changes to be synced with this user account — including password hashes.
 
-Bu dosya benim bilgisayarımda `/usr/share/doc/python3-impacket/examples` dizininde bulunuyor. Şu komutla diğer parola hash'lerine ulaşabiliriz.
+Knowing this, we can use another tool within Impacket called "secretsdump.py". This will let us dump all the password hashes that this backup account has access to. With this, we'll effectively gain full control over the Active Directory domain.
+
+On my machine, this file is located at `/usr/share/doc/python3-impacket/examples`. We can retrieve the password hashes with the following command:
 
 `python secretsdump.py -just-dc backup@10.10.36.93`
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/secretsdump.png)
 
-Sonuçları not.txt dosyama kaydediyoruz ve bu hash'lerden admine ait olanı kullanarak admin kullanıcı hesabına nasıl gireceğimizi düşünüyoruz.
+The results are saved to notes.txt. Now we need to use the admin's hash to gain access to the Administrator account.
 
-Admin kullanıcısının NTLM hash'i 0e0363213e37b94221497260b0bcb4fc olarak buluyoruz. Her iki nokta arası başka bir hash'i ifade ettiğini [bu linkten bakarak öğrenebilirsiniz.](https://security.stackexchange.com/questions/161889/understanding-windows-local-password-hashes-ntlm)
-### *Adım 8:*
-Hash yardımıyla admin girişi yapabilmek için evil-winrm programını kullanacağız. Bu programı aşağıdaki komutla indirebiliriz:
+The Administrator's NTLM hash turns out to be 0e0363213e37b94221497260b0bcb4fc. To understand how the hash format works (each section between colons represents a different hash), check out [this link](https://security.stackexchange.com/questions/161889/understanding-windows-local-password-hashes-ntlm).
+
+### *Step 8:*
+To log in as admin using the hash, we'll use evil-winrm. Install it with:
 
 `apt install evil-winrm`
 
-İndirdikten sonra şu komutu çalıştırarak admin paneline bağlanabiliriz.
+Once installed, connect to the admin panel with:
 
 `evil-winrm -i 10.10.36.93 -u Administrator -H 0e0363213e37b94221497260b0bcb4fc`
 
 ![](https://github.com/hamza37yavuz/Attacktive-Directory-YolHaritasi-/blob/main/admin.png)
 
-Burada ilk ve en önemli bayrağımızı bulmuş olduk (Admin)-> `TryHackMe{4ctiveD1rectoryM4st3r}`
-Bunu da not.txt dosyamız not alıyoruz ve admin panelinden diğer kullanıcılara erişerek onların içerisindeki bayrakları bulmaya devam ediyoruz.
+And there it is — our first and most important flag (Admin) -> `TryHackMe{4ctiveD1rectoryM4st3r}`
+
+We note this down and continue navigating through the admin panel to access other user directories and capture the remaining flags:
 
  `(svc-admin)->TryHackMe{K3rb3r0s_Pr3_4uth}`
  
  `(backup)->TryHackMe{B4ckM3UpSc0tty!}`
  
- Bu şekilde tüm bayrakları bulduk ve görevi bitirdik.
+All flags captured — challenge complete!
  
- Okuduğunuz için teşekkürler :) 
+Thanks for reading :)
